@@ -158,7 +158,7 @@ export const quizStore = {
     useEffect(() => {
       const listener = () => setSelected(selectorRef.current(state));
       listener();
-      return subscribe(listener);
+      subscribe(listener);
     }, []);
 
     return selected;

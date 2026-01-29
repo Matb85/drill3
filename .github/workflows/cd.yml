@@ -1,0 +1,29 @@
+name: cd
+
+on: [push, pull_request]
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup node env
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24.x"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Generate
+        run: pnpm build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out

@@ -22,7 +22,7 @@ export class QuestionParser {
       .apply(splitWithDoubleLines)
       .filter(matchNonEmptyStrings)
       .apply(this.optionsUtils.loadOptions(options))
-      .map(str => this.parsingUtils.parseQuestion(str))
+      .map((str: string) => this.parsingUtils.parseQuestion(str))
       .apply((items, log) => this.parsingUtils.mergeBrokenQuestions(items, log))
       .apply((items, log) => this.parsingUtils.removeInvalidQuestions(items, log))
       .apply(this.optionsUtils.assignQuestionExtras(options));

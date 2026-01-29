@@ -5,7 +5,10 @@ export type AnswerMatch = { correct: boolean; letter: string; content: string };
 
 export const splitWithNewlines = (input: string): string[] => input.split(/(?:\r?\n)/);
 
-export const splitWithDoubleLines = (input: string): string[] => input.split(/(?:\r?\n){2,}/);
+export const splitWithDoubleLines = (input: string | string[], _log?: LogFn): string[] => {
+  const source = Array.isArray(input) ? input.join("\n\n") : input;
+  return source.split(/(?:\r?\n){2,}/);
+};
 
 export function matchAnswer(str: string): AnswerMatch | null {
   const match = /^\s*(>+)?\s*([A-Z])\)\s*([\s\S]+)$/i.exec(str);
@@ -26,7 +29,7 @@ export function matchIdentifier(str: string): IdentifierMatch | null {
   };
 }
 
-export const matchNonEmptyStrings = (str: string): boolean => str.trim().length > 0;
+export const matchNonEmptyStrings = (str: string, _log?: LogFn): boolean => str.trim().length > 0;
 
 export const ensureArray = <T>(value: unknown, logFn: LogFn, label: string): T[] => {
   if (!Array.isArray(value)) {

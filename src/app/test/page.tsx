@@ -130,7 +130,7 @@ export default function Test() {
                       stateClass,
                     )}
                   >
-                    <Checkbox checked={selected} readOnly className="mt-1" />
+                    <Checkbox checked={selected} className="mt-1" />
                     <div className="flex flex-1 flex-col gap-1">
                       <span className="font-medium text-slate-800 dark:text-slate-100">{option.text}</span>
                       {reveal && option.explanation && (
