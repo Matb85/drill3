@@ -49,9 +49,7 @@ export default function Home() {
             <CardTitle className="flex items-center gap-2 text-lg">
               <UploadCloud className="size-5 text-indigo-500" /> Load questions
             </CardTitle>
-            <CardDescription>
-              Upload a file, paste text, or use the mock sample. Parsing is mocked for now.
-            </CardDescription>
+            <CardDescription>Upload a .txt file, paste text, or use the mock sample.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
             <div className="flex flex-col gap-4">

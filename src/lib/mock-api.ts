@@ -85,13 +85,18 @@ function cloneQuestions() {
 }
 
 export const mockQuestionApi = {
-  async loadFromFile(_: File | null) {
+  async loadFromFile(file: File | null) {
     await delay();
-    return cloneQuestions();
+    if (!file) return cloneQuestions();
+    const text = await file.text();
+    const { questions } = await import("@/lib/parser").then(mod => mod.parseQuestionsFromText(text));
+    return questions.length ? questions : cloneQuestions();
   },
-  async loadFromText(_: string) {
+  async loadFromText(text: string) {
     await delay();
-    return cloneQuestions();
+    if (!text.trim()) return cloneQuestions();
+    const { questions } = await import("@/lib/parser").then(mod => mod.parseQuestionsFromText(text));
+    return questions.length ? questions : cloneQuestions();
   },
   async loadSample() {
     await delay();
