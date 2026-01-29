@@ -231,12 +231,7 @@ export const quizStore = {
   toggleOption(question: QuizQuestion, optionId: string) {
     setState(prev => {
       const current = prev.selectedOptions[question.id] ?? [];
-      const nextSelection =
-        question.type === "single"
-          ? [optionId]
-          : current.includes(optionId)
-            ? current.filter(id => id !== optionId)
-            : [...current, optionId];
+      const nextSelection = current.includes(optionId) ? current.filter(id => id !== optionId) : [...current, optionId];
 
       return { ...prev, selectedOptions: { ...prev.selectedOptions, [question.id]: nextSelection } };
     });

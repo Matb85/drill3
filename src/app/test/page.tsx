@@ -81,7 +81,9 @@ export default function Test() {
       <Card>
         <CardHeader className="space-y-2">
           <CardTitle className="text-xl">{question.prompt}</CardTitle>
-          <CardDescription>{question.category}</CardDescription>
+          <CardDescription>
+            {question.category ?? "Practice set"} · Select all answers you believe are correct.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           {question.options.map(option => {
@@ -120,18 +122,17 @@ export default function Test() {
 
           {revealStatus(currentResult)}
         </CardContent>
-        <CardFooter className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="text-sm text-slate-600 dark:text-slate-300">
-            {currentResult ? "Checked" : "Select options then check."}
-          </div>
-          <div className="flex gap-2">
+        <CardFooter className="flex items-center justify-end gap-2">
+          {!currentResult && (
             <Button variant="secondary" onClick={check} disabled={loading} className="gap-2">
               {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Check
             </Button>
-            <Button onClick={next} disabled={!currentResult} className="gap-2">
+          )}
+          {currentResult && (
+            <Button onClick={next} className="gap-2">
               Next <ArrowRight className="size-4" />
             </Button>
-          </div>
+          )}
         </CardFooter>
       </Card>
     </div>

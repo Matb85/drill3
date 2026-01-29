@@ -7,16 +7,6 @@ import { ArrowRight, Clock3, FileText, Loader2, Shuffle, UploadCloud, Wand2 } fr
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-  FieldTitle,
-} from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
@@ -64,7 +54,7 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-4">
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
                 <p className="font-medium">Upload a file</p>
                 <p className="text-xs text-slate-600 dark:text-slate-400">We will use mock data until parsing ships.</p>
@@ -142,46 +132,58 @@ export default function Home() {
             <CardTitle className="flex items-center gap-2 text-lg">
               <Shuffle className="size-5 text-indigo-500" /> Test configuration
             </CardTitle>
-            <CardDescription>Choose shuffling, scoring, and pacing.</CardDescription>
+            <CardDescription>Keep it simple and consistent.</CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-5">
-            <FieldSet>
-              <FieldLegend>Shuffling</FieldLegend>
-              <FieldGroup>
-                <Field orientation="horizontal" className="items-center">
-                  <FieldLabel>
-                    <Checkbox
-                      checked={config.shuffleQuestions}
-                      onCheckedChange={checked => quizStore.setConfig({ shuffleQuestions: Boolean(checked) })}
-                    />
-                    <FieldTitle>Shuffle questions</FieldTitle>
-                  </FieldLabel>
-                  <FieldContent>
-                    <FieldDescription>Randomize question order.</FieldDescription>
-                  </FieldContent>
-                </Field>
-                <Field orientation="horizontal" className="items-center">
-                  <FieldLabel>
-                    <Checkbox
-                      checked={config.shuffleAnswers}
-                      onCheckedChange={checked => quizStore.setConfig({ shuffleAnswers: Boolean(checked) })}
-                    />
-                    <FieldTitle>Shuffle answers</FieldTitle>
-                  </FieldLabel>
-                  <FieldContent>
-                    <FieldDescription>Mix option order per run.</FieldDescription>
-                  </FieldContent>
-                </Field>
-              </FieldGroup>
-            </FieldSet>
+          <CardContent className="flex flex-col gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <span className="text-slate-700 dark:text-slate-200">
+                {questions.length ? `${questions.length} questions loaded` : "Load questions to begin."}
+              </span>
+              <div className="flex gap-2">
+                <Button variant="ghost" onClick={() => quizStore.reset()} disabled={loading}>
+                  Reset
+                </Button>
+                <Button onClick={() => void handleStart()} className="gap-2" disabled={loading}>
+                  {loading ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
+                  Go to test
+                </Button>
+              </div>
+            </div>
 
-            <FieldSet>
-              <FieldLegend>Scoring</FieldLegend>
-              <FieldGroup>
+            <div className="grid gap-3">
+              <div className="flex items-start justify-between rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="space-y-1 pr-4">
+                  <p className="text-sm font-medium text-slate-800 dark:text-slate-100">Shuffle questions</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Randomize question order each run.</p>
+                </div>
+                <Checkbox
+                  checked={config.shuffleQuestions}
+                  onCheckedChange={checked => quizStore.setConfig({ shuffleQuestions: Boolean(checked) })}
+                />
+              </div>
+
+              <div className="flex items-start justify-between rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="space-y-1 pr-4">
+                  <p className="text-sm font-medium text-slate-800 dark:text-slate-100">Shuffle answers</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Mix option order per question.</p>
+                </div>
+                <Checkbox
+                  checked={config.shuffleAnswers}
+                  onCheckedChange={checked => quizStore.setConfig({ shuffleAnswers: Boolean(checked) })}
+                />
+              </div>
+
+              <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-slate-800 dark:text-slate-100">Scoring</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Choose how credit is assigned.</p>
+                  </div>
+                </div>
                 <RadioGroup
                   value={config.scoring}
                   onValueChange={(value: ScoringMode) => quizStore.setConfig({ scoring: value })}
-                  className="grid gap-2"
+                  className="mt-3 grid gap-2"
                 >
                   <Label className="flex items-center gap-2">
                     <RadioGroupItem value="per-question" id="score-question" /> Per question (perfect = 1)
@@ -190,16 +192,19 @@ export default function Home() {
                     <RadioGroupItem value="per-answer" id="score-answer" /> Per answer (partials)
                   </Label>
                 </RadioGroup>
-              </FieldGroup>
-            </FieldSet>
+              </div>
 
-            <FieldSet>
-              <FieldLegend>Penalties</FieldLegend>
-              <FieldGroup>
+              <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-slate-800 dark:text-slate-100">Penalties</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Pick how wrong answers count.</p>
+                  </div>
+                </div>
                 <RadioGroup
                   value={config.penalty}
                   onValueChange={(value: PenaltyMode) => quizStore.setConfig({ penalty: value })}
-                  className="grid gap-2"
+                  className="mt-3 grid gap-2"
                 >
                   <Label className="flex items-center gap-2">
                     <RadioGroupItem value="counterbalance" id="penalty-counter" /> Wrong subtracts from correct
@@ -208,48 +213,28 @@ export default function Home() {
                     <RadioGroupItem value="zeroes" id="penalty-zero" /> Any wrong zeros the question
                   </Label>
                 </RadioGroup>
-              </FieldGroup>
-            </FieldSet>
+              </div>
 
-            <FieldSet>
-              <FieldLegend>Timing</FieldLegend>
-              <FieldGroup>
-                <Field orientation="horizontal" className="items-center">
-                  <FieldLabel className="gap-2">
-                    <Clock3 className="size-4 text-indigo-500" />
-                    <FieldTitle>Time per question</FieldTitle>
-                  </FieldLabel>
-                  <FieldContent>
-                    <input
-                      type="number"
-                      min={15}
-                      max={300}
-                      value={config.timePerQuestion}
-                      onChange={event =>
-                        quizStore.setConfig({ timePerQuestion: Number(event.target.value) || config.timePerQuestion })
-                      }
-                      className="w-24 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900"
-                    />
-                    <FieldDescription>Guidance only; no timer yet.</FieldDescription>
-                  </FieldContent>
-                </Field>
-              </FieldGroup>
-            </FieldSet>
+              <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="space-y-1 pr-4">
+                  <p className="flex items-center gap-2 text-sm font-medium text-slate-800 dark:text-slate-100">
+                    <Clock3 className="size-4 text-indigo-500" /> Time per question
+                  </p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Guidance only; no timer yet.</p>
+                </div>
+                <input
+                  type="number"
+                  min={15}
+                  max={300}
+                  value={config.timePerQuestion}
+                  onChange={event =>
+                    quizStore.setConfig({ timePerQuestion: Number(event.target.value) || config.timePerQuestion })
+                  }
+                  className="w-24 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                />
+              </div>
+            </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-sm text-slate-600 dark:text-slate-300">
-              {questions.length ? `${questions.length} questions loaded` : "Load questions to begin."}
-            </div>
-            <div className="flex gap-2">
-              <Button variant="ghost" onClick={() => quizStore.reset()} disabled={loading}>
-                Reset
-              </Button>
-              <Button onClick={() => void handleStart()} className="gap-2" disabled={loading}>
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
-                Go to test
-              </Button>
-            </div>
-          </CardFooter>
         </Card>
       </div>
     </div>
