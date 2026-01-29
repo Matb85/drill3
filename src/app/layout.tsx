@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
+
 import "./globals.css";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,9 +28,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-50`}
       >
-        {children}
+        <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 pb-10 pt-6 sm:px-6 lg:px-8">
+          <header className="mb-6 flex items-center justify-between rounded-xl border border-slate-200 bg-white/70 px-4 py-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
+            <Link href="/" className="font-semibold tracking-tight text-slate-900 dark:text-slate-50">
+              Drill Companion
+            </Link>
+            <ThemeToggle />
+          </header>
+          <main className="flex-1">{children}</main>
+        </div>
       </body>
     </html>
   );
