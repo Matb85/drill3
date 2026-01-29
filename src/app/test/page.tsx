@@ -7,7 +7,7 @@ import { ArrowRight, CheckCircle2, Clock3, Frown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { quizStore } from "@/lib/quiz-store";
+import { quizStore, selectSummary } from "@/lib/quiz-store";
 import { cn } from "@/lib/utils";
 
 export default function Test() {
@@ -22,10 +22,15 @@ export default function Test() {
     config: state.config,
   }));
 
+  const summary = quizStore.useStore(selectSummary);
+
   const question = activeQuestions[currentIndex];
   const resultMap = Object.fromEntries(results.map(item => [item.questionId, item]));
   const loading = status === "loading";
   const progress = activeQuestions.length ? Math.round(((currentIndex + 1) / activeQuestions.length) * 100) : 0;
+  const answeredCount = results.length;
+  const totalQuestions = activeQuestions.length || 1;
+  const completionPercent = Math.round((answeredCount / totalQuestions) * 100);
 
   useEffect(() => {
     if (status === "done") {
@@ -64,73 +69,110 @@ export default function Test() {
 
   const currentResult = resultMap[question.id];
 
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
-          Question {currentIndex + 1} of {activeQuestions.length}
-        </div>
-        <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-100">
-            {progress}%
+  const ScorePanel = ({ className }: { className?: string }) => (
+    <Card className={cn("border-slate-200 shadow-sm dark:border-slate-800", className)}>
+      <CardHeader>
+        <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
+          <span className="font-semibold text-slate-800 dark:text-slate-100">Score</span>
+          <span className="rounded-full bg-white px-3 py-1 font-semibold text-indigo-600 shadow-sm dark:bg-slate-900 dark:text-indigo-200">
+            {summary.scorePercent}%
           </span>
         </div>
+        <div className="mt-3 h-2 rounded-full bg-slate-200 dark:bg-slate-800">
+          <div className="h-full rounded-full bg-indigo-500" style={{ width: `${completionPercent}%` }} />
+        </div>
+        <div className="mt-2 text-slate-600 dark:text-slate-300">
+          {answeredCount} of {activeQuestions.length} answered • {completionPercent}% complete
+        </div>
+      </CardHeader>
+      <CardContent className="grid grid-cols-3 gap-2 text-center font-medium text-slate-700 dark:text-slate-200">
+        <div className="rounded-lg border border-emerald-100 bg-white px-3 py-3 shadow-sm dark:border-emerald-500/30 dark:bg-slate-900">
+          <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-300">{summary.correct}</div>
+          <div>Correct</div>
+        </div>
+        <div className="rounded-lg border border-amber-100 bg-white px-3 py-3 shadow-sm dark:border-amber-500/30 dark:bg-slate-900">
+          <div className="text-lg font-semibold text-amber-600 dark:text-amber-300">{summary.partial}</div>
+          <div>Partial</div>
+        </div>
+        <div className="rounded-lg border border-rose-100 bg-white px-3 py-3 shadow-sm dark:border-rose-500/30 dark:bg-slate-900">
+          <div className="text-lg font-semibold text-rose-600 dark:text-rose-300">{summary.incorrect}</div>
+          <div>Wrong</div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="flex flex-col gap-4">
+          <Card>
+            <CardHeader className="space-y-2">
+              <CardTitle className=" text-slate-500 dark:text-slate-400">
+                Question {currentIndex + 1} of {activeQuestions.length}
+              </CardTitle>
+              <CardTitle className="text-xl">{question.prompt}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              {question.options.map(option => {
+                const selected = selectedOptions[question.id]?.includes(option.id);
+                const reveal = Boolean(currentResult);
+                const isCorrectChoice = option.correct;
+                const stateClass = reveal
+                  ? isCorrectChoice
+                    ? "border-emerald-500/60 bg-emerald-50 dark:bg-emerald-500/10"
+                    : selected
+                      ? "border-rose-500/60 bg-rose-50 dark:bg-rose-500/10"
+                      : "border-slate-200 dark:border-slate-800"
+                  : "hover:border-indigo-400";
+
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => toggle(option.id)}
+                    className={cn(
+                      "flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
+                      "bg-white dark:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+                      stateClass,
+                    )}
+                  >
+                    <Checkbox checked={selected} readOnly className="mt-1" />
+                    <div className="flex flex-1 flex-col gap-1">
+                      <span className="font-medium text-slate-800 dark:text-slate-100">{option.text}</span>
+                      {reveal && option.explanation && (
+                        <span className="text-slate-600 dark:text-slate-300">{option.explanation}</span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+
+              {revealStatus(currentResult)}
+            </CardContent>
+            <CardFooter className="flex items-center justify-end gap-2">
+              {!currentResult && (
+                <Button variant="secondary" onClick={check} disabled={loading} className="gap-2">
+                  {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Check
+                </Button>
+              )}
+              {currentResult && (
+                <Button onClick={next} className="gap-2">
+                  Next <ArrowRight className="size-4" />
+                </Button>
+              )}
+            </CardFooter>
+          </Card>
+
+          <div className="lg:hidden">
+            <ScorePanel />
+          </div>
+        </div>
+
+        <aside className="hidden lg:block">
+          <ScorePanel />
+        </aside>
       </div>
-
-      <Card>
-        <CardHeader className="space-y-2">
-          <CardTitle className="text-xl">{question.prompt}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          {question.options.map(option => {
-            const selected = selectedOptions[question.id]?.includes(option.id);
-            const reveal = Boolean(currentResult);
-            const isCorrectChoice = option.correct;
-            const stateClass = reveal
-              ? isCorrectChoice
-                ? "border-emerald-500/60 bg-emerald-50 dark:bg-emerald-500/10"
-                : selected
-                  ? "border-rose-500/60 bg-rose-50 dark:bg-rose-500/10"
-                  : "border-slate-200 dark:border-slate-800"
-              : "hover:border-indigo-400";
-
-            return (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => toggle(option.id)}
-                className={cn(
-                  "flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
-                  "bg-white dark:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
-                  stateClass,
-                )}
-              >
-                <Checkbox checked={selected} readOnly className="mt-1" />
-                <div className="flex flex-1 flex-col gap-1">
-                  <span className="text-sm font-medium text-slate-800 dark:text-slate-100">{option.text}</span>
-                  {reveal && option.explanation && (
-                    <span className="text-xs text-slate-600 dark:text-slate-300">{option.explanation}</span>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-
-          {revealStatus(currentResult)}
-        </CardContent>
-        <CardFooter className="flex items-center justify-end gap-2">
-          {!currentResult && (
-            <Button variant="secondary" onClick={check} disabled={loading} className="gap-2">
-              {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Check
-            </Button>
-          )}
-          {currentResult && (
-            <Button onClick={next} className="gap-2">
-              Next <ArrowRight className="size-4" />
-            </Button>
-          )}
-        </CardFooter>
-      </Card>
     </div>
   );
 }
@@ -138,7 +180,7 @@ export default function Test() {
 function revealStatus(result?: { isCorrect: boolean; partial: boolean }) {
   if (!result) return null;
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-800 dark:bg-slate-800 dark:text-slate-100">
+    <div className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-slate-800 dark:bg-slate-800 dark:text-slate-100">
       {result.isCorrect && <CheckCircle2 className="size-4 text-emerald-500" />}
       {!result.isCorrect && <Frown className="size-4 text-amber-500" />}
       <span>

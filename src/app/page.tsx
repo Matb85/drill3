@@ -53,7 +53,7 @@ export default function Home() {
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
             <div className="flex flex-col gap-4">
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="rounded-lg border border-slate-200 p-4 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
                 <p className="font-medium">Upload a file</p>
                 <p className="text-xs text-slate-600 dark:text-slate-400">We will use mock data until parsing ships.</p>
                 <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -79,16 +79,10 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="rounded-lg border border-slate-200 p-4 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
                 <p className="font-medium">Paste questions</p>
                 <p className="text-xs text-slate-600 dark:text-slate-400">The API returns a mock set for now.</p>
-                <Textarea
-                  rows={4}
-                  value={pastedText}
-                  onChange={event => quizStore.setPastedText(event.target.value)}
-                  placeholder="Paste your question bank..."
-                  className="mt-3"
-                />
+
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button
                     size="sm"
@@ -97,12 +91,19 @@ export default function Home() {
                     onClick={() => void quizStore.loadFromText(pastedText)}
                   >
                     {loading ? <Loader2 className="size-4 animate-spin" /> : <UploadCloud className="size-4" />}
-                    Use pasted text
+                    Load pasted text
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => quizStore.setPastedText("")}>
                     Clear
                   </Button>
                 </div>
+                <Textarea
+                  rows={4}
+                  value={pastedText}
+                  onChange={event => quizStore.setPastedText(event.target.value)}
+                  placeholder="Paste your question bank..."
+                  className="mt-3"
+                />
               </div>
             </div>
 
@@ -149,26 +150,26 @@ export default function Home() {
             </div>
 
             <div className="grid gap-3">
-              <div className="flex items-start justify-between rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <div className="space-y-1 pr-4">
-                  <p className="text-sm font-medium text-slate-800 dark:text-slate-100">Shuffle questions</p>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">Randomize question order each run.</p>
-                </div>
-                <Checkbox
-                  checked={config.shuffleQuestions}
-                  onCheckedChange={checked => quizStore.setConfig({ shuffleQuestions: Boolean(checked) })}
-                />
+              <div className="space-y-1 rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <label className="text-sm flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
+                  <Checkbox
+                    checked={config.shuffleQuestions}
+                    onCheckedChange={checked => quizStore.setConfig({ shuffleQuestions: Boolean(checked) })}
+                  />
+                  Shuffle questions
+                </label>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Randomize question order each run.</p>
               </div>
 
-              <div className="flex items-start justify-between rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <div className="space-y-1 pr-4">
-                  <p className="text-sm font-medium text-slate-800 dark:text-slate-100">Shuffle answers</p>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">Mix option order per question.</p>
-                </div>
-                <Checkbox
-                  checked={config.shuffleAnswers}
-                  onCheckedChange={checked => quizStore.setConfig({ shuffleAnswers: Boolean(checked) })}
-                />
+              <div className="space-y-1 rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <label className="text-sm flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
+                  <Checkbox
+                    checked={config.shuffleAnswers}
+                    onCheckedChange={checked => quizStore.setConfig({ shuffleAnswers: Boolean(checked) })}
+                  />
+                  Shuffle answers
+                </label>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Mix option order per question.</p>
               </div>
 
               <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">

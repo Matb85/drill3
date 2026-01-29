@@ -76,10 +76,7 @@ export default function Summary() {
                 className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <p className="font-medium text-slate-800 dark:text-slate-100">{q.prompt}</p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">{q.category ?? "Uncategorized"}</p>
-                  </div>
+                  <p className="font-medium text-slate-800 dark:text-slate-100">{q.prompt}</p>
                   <OutcomePill result={result} />
                 </div>
                 <div className="mt-3 space-y-2">

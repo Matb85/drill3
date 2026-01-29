@@ -32,10 +32,15 @@ export default function RootLayout({
       >
         <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 pb-10 pt-6 sm:px-6 lg:px-8">
           <header className="mb-6 flex items-center justify-between rounded-xl border border-slate-200 bg-white/70 px-4 py-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
-            <Link href="/" className="font-semibold tracking-tight text-slate-900 dark:text-slate-50">
+            <Link href="/" className="font-semibold text-2xl tracking-tight ">
               Drill Companion
             </Link>
-            <ThemeToggle />
+            <div className="flex gap-4 items-center">
+              <Link href="/" className="font-semibold tracking-tight text-slate-500 dark:text-slate-50">
+                Home
+              </Link>
+              <ThemeToggle />
+            </div>
           </header>
           <main className="flex-1">{children}</main>
         </div>
