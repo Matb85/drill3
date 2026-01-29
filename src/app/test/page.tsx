@@ -71,7 +71,6 @@ export default function Test() {
           Question {currentIndex + 1} of {activeQuestions.length}
         </div>
         <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-          <Clock3 className="size-4" /> ~{question.estimatedTime ?? config.timePerQuestion}s suggested
           <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-100">
             {progress}%
           </span>
@@ -81,9 +80,6 @@ export default function Test() {
       <Card>
         <CardHeader className="space-y-2">
           <CardTitle className="text-xl">{question.prompt}</CardTitle>
-          <CardDescription>
-            {question.category ?? "Practice set"} · Select all answers you believe are correct.
-          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           {question.options.map(option => {

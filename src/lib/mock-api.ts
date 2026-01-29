@@ -8,10 +8,6 @@ export type QuizOption = {
 export type QuizQuestion = {
   id: string;
   prompt: string;
-  type: "single" | "multiple";
-  category?: string;
-  level?: "intro" | "core" | "applied";
-  estimatedTime?: number;
   options: QuizOption[];
 };
 
@@ -19,10 +15,6 @@ const mockQuestions: QuizQuestion[] = [
   {
     id: "q1",
     prompt: "International finance primarily examines...",
-    type: "single",
-    category: "Foundations",
-    level: "intro",
-    estimatedTime: 30,
     options: [
       { id: "q1a", text: "Domestic fiscal policy", correct: false },
       { id: "q1b", text: "Income distribution within countries", correct: false },
@@ -33,10 +25,6 @@ const mockQuestions: QuizQuestion[] = [
   {
     id: "q2",
     prompt: "Why might countries impose capital controls?",
-    type: "multiple",
-    category: "Policy",
-    level: "core",
-    estimatedTime: 40,
     options: [
       { id: "q2a", text: "Protect domestic financial stability", correct: true },
       { id: "q2b", text: "Improve short-term exchange rate predictability", correct: true },
@@ -47,10 +35,6 @@ const mockQuestions: QuizQuestion[] = [
   {
     id: "q3",
     prompt: "A widening current account deficit typically indicates...",
-    type: "single",
-    category: "Balances",
-    level: "core",
-    estimatedTime: 35,
     options: [
       { id: "q3a", text: "Exports exceed imports", correct: false },
       { id: "q3b", text: "Imports exceed exports", correct: true },
@@ -61,10 +45,6 @@ const mockQuestions: QuizQuestion[] = [
   {
     id: "q4",
     prompt: "Select the statements that describe floating exchange rates.",
-    type: "multiple",
-    category: "FX Regimes",
-    level: "applied",
-    estimatedTime: 50,
     options: [
       { id: "q4a", text: "Currency value is set by market supply and demand", correct: true },
       { id: "q4b", text: "Central banks mechanically peg to another currency", correct: false },
@@ -75,10 +55,7 @@ const mockQuestions: QuizQuestion[] = [
   {
     id: "q5",
     prompt: "Which tools are commonly used to defend a currency peg?",
-    type: "multiple",
-    category: "FX Regimes",
-    level: "applied",
-    estimatedTime: 40,
+
     options: [
       { id: "q5a", text: "Selling foreign reserves", correct: true },
       { id: "q5b", text: "Changing domestic interest rates", correct: true },
@@ -89,10 +66,7 @@ const mockQuestions: QuizQuestion[] = [
   {
     id: "q6",
     prompt: "Covered interest parity is expected to hold when...",
-    type: "single",
-    category: "Parity Conditions",
-    level: "core",
-    estimatedTime: 45,
+
     options: [
       { id: "q6a", text: "Capital controls fully block arbitrage", correct: false },
       { id: "q6b", text: "Forward and spot rates offset rate differentials", correct: true },
