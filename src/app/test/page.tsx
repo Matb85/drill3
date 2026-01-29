@@ -72,29 +72,23 @@ export default function Test() {
   const ScorePanel = ({ className }: { className?: string }) => (
     <Card className={cn("border-slate-200 shadow-sm dark:border-slate-800", className)}>
       <CardHeader>
-        <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
-          <span className="font-semibold text-slate-800 dark:text-slate-100">Score</span>
-          <span className="rounded-full bg-white px-3 py-1 font-semibold text-indigo-600 shadow-sm dark:bg-slate-900 dark:text-indigo-200">
-            {summary.scorePercent}%
-          </span>
+        <div className="font-semibold text-slate-800 dark:text-slate-100">
+          Score: {summary.scorePercent}% ({summary.correct}/{currentIndex})
         </div>
         <div className="mt-3 h-2 rounded-full bg-slate-200 dark:bg-slate-800">
           <div className="h-full rounded-full bg-indigo-500" style={{ width: `${completionPercent}%` }} />
         </div>
-        <div className="mt-2 text-slate-600 dark:text-slate-300">
-          {answeredCount} of {activeQuestions.length} answered • {completionPercent}% complete
-        </div>
       </CardHeader>
       <CardContent className="grid grid-cols-3 gap-2 text-center font-medium text-slate-700 dark:text-slate-200">
-        <div className="rounded-lg border border-emerald-100 bg-white px-3 py-3 shadow-sm dark:border-emerald-500/30 dark:bg-slate-900">
+        <div className="box border-emerald-100 dark:border-emerald-500/30">
           <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-300">{summary.correct}</div>
           <div>Correct</div>
         </div>
-        <div className="rounded-lg border border-amber-100 bg-white px-3 py-3 shadow-sm dark:border-amber-500/30 dark:bg-slate-900">
+        <div className="box border-amber-100 dark:border-amber-500/30">
           <div className="text-lg font-semibold text-amber-600 dark:text-amber-300">{summary.partial}</div>
           <div>Partial</div>
         </div>
-        <div className="rounded-lg border border-rose-100 bg-white px-3 py-3 shadow-sm dark:border-rose-500/30 dark:bg-slate-900">
+        <div className="box border-rose-100 dark:border-rose-500/30">
           <div className="text-lg font-semibold text-rose-600 dark:text-rose-300">{summary.incorrect}</div>
           <div>Wrong</div>
         </div>
@@ -127,9 +121,8 @@ export default function Test() {
                   : "hover:border-indigo-400";
 
                 return (
-                  <button
+                  <label
                     key={option.id}
-                    type="button"
                     onClick={() => toggle(option.id)}
                     className={cn(
                       "flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
@@ -144,29 +137,25 @@ export default function Test() {
                         <span className="text-slate-600 dark:text-slate-300">{option.explanation}</span>
                       )}
                     </div>
-                  </button>
+                  </label>
                 );
               })}
 
               {revealStatus(currentResult)}
+              <div className="flex items-center justify-end gap-2">
+                {!currentResult && (
+                  <Button variant="secondary" onClick={check} disabled={loading} className="gap-2">
+                    {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Check
+                  </Button>
+                )}
+                {currentResult && (
+                  <Button onClick={next} className="gap-2">
+                    Next <ArrowRight className="size-4" />
+                  </Button>
+                )}
+              </div>
             </CardContent>
-            <CardFooter className="flex items-center justify-end gap-2">
-              {!currentResult && (
-                <Button variant="secondary" onClick={check} disabled={loading} className="gap-2">
-                  {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Check
-                </Button>
-              )}
-              {currentResult && (
-                <Button onClick={next} className="gap-2">
-                  Next <ArrowRight className="size-4" />
-                </Button>
-              )}
-            </CardFooter>
           </Card>
-
-          <div className="lg:hidden">
-            <ScorePanel />
-          </div>
         </div>
 
         <aside className="hidden lg:block">
@@ -178,7 +167,12 @@ export default function Test() {
 }
 
 function revealStatus(result?: { isCorrect: boolean; partial: boolean }) {
-  if (!result) return null;
+  if (!result)
+    return (
+      <div className="invisible flex items-center gap-2 rounded-lgbg-slate-100 px-3 py-2 text-slate-800 dark:bg-slate-800 dark:text-slate-100">
+        <span>Not checked yet</span>
+      </div>
+    );
   return (
     <div className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-slate-800 dark:bg-slate-800 dark:text-slate-100">
       {result.isCorrect && <CheckCircle2 className="size-4 text-emerald-500" />}

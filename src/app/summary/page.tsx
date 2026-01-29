@@ -47,13 +47,12 @@ export default function Summary() {
         </CardContent>
         <CardFooter className="flex flex-wrap gap-2">
           <Button onClick={() => router.push("/")}>Go home</Button>
-          <Button onClick={() => router.push("/test")}>Review test</Button>
           <Button
             variant="secondary"
             className="gap-2"
             onClick={() => {
-              quizStore.reset();
-              router.push("/");
+              quizStore.restartProgress();
+              router.push("/test");
             }}
           >
             <RefreshCw className="size-4" /> Restart

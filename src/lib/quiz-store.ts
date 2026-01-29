@@ -172,6 +172,15 @@ export const quizStore = {
   reset() {
     setState(initialState);
   },
+  restartProgress() {
+    setState(prev => ({
+      ...prev,
+      status: "ready",
+      selectedOptions: {},
+      results: [],
+      currentIndex: 0,
+    }));
+  },
   async loadFromFile(file: File | null) {
     setState(prev => ({ ...prev, status: "loading", fileName: file?.name ?? null }));
     const loaded = await mockQuestionApi.loadFromFile(file);

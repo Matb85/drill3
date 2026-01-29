@@ -121,6 +121,12 @@
   }
 }
 
+@layer components {
+  .box {
+    @apply rounded-lg border border-slate-200 bg-white px-3 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900;
+  }
+}
+
 /* Print styles for reports */
 @media print {
   @page {
