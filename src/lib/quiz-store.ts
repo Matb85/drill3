@@ -118,13 +118,6 @@ function prepareQuestions(list: QuizQuestion[], config: TestConfig) {
   }));
 }
 
-async function ensureQuestionsReady() {
-  if (state.questions.length) return state.questions;
-  const loaded = await mockQuestionApi.loadSample();
-  setState(prev => ({ ...prev, questions: loaded, status: "ready" }));
-  return loaded;
-}
-
 function computeResult(question: QuizQuestion, selected: string[], config: TestConfig): QuestionResult {
   const correctIds = question.options.filter(option => option.correct).map(option => option.id);
   const good = selected.filter(id => correctIds.includes(id)).length;
@@ -225,8 +218,8 @@ export const quizStore = {
   },
   async startTest() {
     setState(prev => ({ ...prev, status: "loading" }));
-    const base = await ensureQuestionsReady();
-    const prepared = prepareQuestions(base, state.config);
+    if (!state.questions.length) return false;
+    const prepared = prepareQuestions(state.questions, state.config);
     setState(prev => ({
       ...prev,
       status: "testing",
@@ -235,7 +228,7 @@ export const quizStore = {
       results: [],
       currentIndex: 0,
     }));
-    return prepared;
+    return true;
   },
   toggleOption(question: QuizQuestion, optionId: string) {
     setState(prev => {

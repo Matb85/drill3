@@ -121,11 +121,11 @@ export default function Test() {
                   : "hover:border-indigo-400";
 
                 return (
-                  <label
+                  <div
                     key={option.id}
                     onClick={() => toggle(option.id)}
                     className={cn(
-                      "flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
+                      "cursor-pointer flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
                       "bg-white dark:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
                       stateClass,
                     )}
@@ -137,7 +137,7 @@ export default function Test() {
                         <span className="text-slate-600 dark:text-slate-300">{option.explanation}</span>
                       )}
                     </div>
-                  </label>
+                  </div>
                 );
               })}
 

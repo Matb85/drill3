@@ -39,7 +39,7 @@ export default function Home() {
             <CardTitle className="flex items-center gap-2 text-lg">
               <UploadCloud className="size-5 text-indigo-500" /> Load questions
             </CardTitle>
-            <CardDescription>Upload a .txt file, paste text, or use the mock sample.</CardDescription>
+            <CardDescription>Upload a .txt file, paste text, or use the sample.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
             <div className="flex flex-col gap-4">
@@ -59,6 +59,7 @@ export default function Home() {
                   <input
                     ref={fileInputRef}
                     type="file"
+                    accept=".txt"
                     className="hidden"
                     onChange={event => {
                       const file = event.target.files?.[0] ?? null;
@@ -98,13 +99,12 @@ export default function Home() {
 
             <div className="flex flex-wrap items-center gap-3">
               <Button
-                size="sm"
                 variant="outline"
                 className="gap-2"
                 disabled={loading}
                 onClick={() => void quizStore.loadSample()}
               >
-                <Wand2 className="size-4" /> Load mock sample
+                <Wand2 className="size-4" /> Load sample
               </Button>
             </div>
           </CardContent>
@@ -124,7 +124,7 @@ export default function Home() {
               <Button variant="outline" onClick={() => quizStore.reset()} disabled={loading}>
                 Reset
               </Button>
-              <Button onClick={() => void handleStart()} className="gap-2" disabled={loading}>
+              <Button disabled={!questions.length || loading} onClick={() => void handleStart()} className="gap-2">
                 {loading ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
                 Go to test
               </Button>
@@ -168,7 +168,7 @@ export default function Home() {
                   <RadioGroupItem value="per-question" id="score-question" /> Per question (perfect = 1)
                 </Label>
                 <Label className="flex items-center gap-2">
-                  <RadioGroupItem value="per-answer" id="score-answer" /> Per answer (partials)
+                  <RadioGroupItem value="per-answer" id="score-answer" /> Per answer (fractions allowed)
                 </Label>
               </RadioGroup>
             </div>
@@ -194,6 +194,7 @@ export default function Home() {
               </RadioGroup>
             </div>
 
+            {/* 
             <div className="flex items-center justify-between border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
               <div className="space-y-1 pr-4">
                 <p className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
@@ -212,6 +213,7 @@ export default function Home() {
                 className="w-24 rounded-md border border-slate-200 bg-white px-3 py-2 shadow-sm dark:border-slate-800 dark:bg-slate-900"
               />
             </div>
+ */}
           </CardContent>
         </Card>
       </div>
