@@ -22,13 +22,13 @@ export class QuestionParser {
       .apply(splitWithDoubleLines)
       .filter(matchNonEmptyStrings)
       .apply(this.optionsUtils.loadOptions(options))
-      .map((str: string) => this.parsingUtils.parseQuestion(str))
+      .map((str: string, log) => this.parsingUtils.parseQuestion(str, log))
       .apply((items, log) => this.parsingUtils.mergeBrokenQuestions(items, log))
       .apply((items, log) => this.parsingUtils.removeInvalidQuestions(items, log))
       .apply(this.optionsUtils.assignQuestionExtras(options));
 
     return {
-      questions: pipeline.get() as Question[],
+      questions: pipeline.get(),
       options,
       log: pipeline.getLog(),
     };

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
-import { mockQuestionApi, type QuizQuestion } from "@/lib/mock-api";
+import { type QuizQuestion } from "@/lib/types";
 
 export type Stage = "idle" | "ready" | "testing" | "done" | "loading";
 export type ScoringMode = "per-question" | "per-answer";
 export type PenaltyMode = "counterbalance" | "zeroes";
 
-export type TestConfig = {
+type TestConfig = {
   shuffleQuestions: boolean;
   shuffleAnswers: boolean;
   scoring: ScoringMode;
@@ -14,7 +14,7 @@ export type TestConfig = {
   timePerQuestion: number;
 };
 
-export type QuestionResult = {
+type QuestionResult = {
   questionId: string;
   selected: string[];
   isCorrect: boolean;
@@ -22,7 +22,7 @@ export type QuestionResult = {
   score: number;
 };
 
-export type QuizStoreState = {
+type QuizStoreState = {
   status: Stage;
   config: TestConfig;
   questions: QuizQuestion[];
@@ -32,6 +32,7 @@ export type QuizStoreState = {
   currentIndex: number;
   fileName: string | null;
   pastedText: string;
+  logs: string[];
 };
 
 type Listener = () => void;
@@ -44,7 +45,7 @@ const defaultConfig: TestConfig = {
   timePerQuestion: 60,
 };
 
-const STORAGE_KEY = "quiz-store";
+const STORAGE_KEY = "quiz-store-26-01-30";
 
 const initialState: QuizStoreState = {
   status: "idle",
@@ -56,7 +57,21 @@ const initialState: QuizStoreState = {
   currentIndex: 0,
   fileName: null,
   pastedText: "",
+  logs: [],
 };
+
+function delay(ms = 320) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function parseQuestions(text: string) {
+  await delay();
+  return await import("@/lib/parser").then(mod => mod.parseQuestionsFromText(text));
+}
+async function loadSample() {
+  await delay();
+  const questions = await import("@/lib/mock-questions.json").then(mod => mod.default);
+  return { questions: structuredClone(questions), log: [] };
+}
 
 let state: QuizStoreState = initialState;
 const listeners = new Set<Listener>();
@@ -85,7 +100,12 @@ function writeToStorage(snapshot: QuizStoreState) {
 if (typeof window !== "undefined") {
   const stored = readFromStorage();
   if (stored) {
-    state = stored;
+    state = {
+      ...initialState,
+      ...stored,
+      config: { ...initialState.config, ...stored.config },
+      logs: stored.logs ?? [],
+    };
   }
 }
 
@@ -97,7 +117,7 @@ function setState(next: QuizStoreState | ((prev: QuizStoreState) => QuizStoreSta
 
 function subscribe(listener: Listener) {
   listeners.add(listener);
-  return () => listeners.delete(listener);
+  return () => void listeners.delete(listener);
 }
 
 function shuffleArray<T>(items: T[]) {
@@ -151,7 +171,7 @@ export const quizStore = {
     useEffect(() => {
       const listener = () => setSelected(selectorRef.current(state));
       listener();
-      subscribe(listener);
+      return subscribe(listener);
     }, []);
 
     return selected;
@@ -176,45 +196,48 @@ export const quizStore = {
   },
   async loadFromFile(file: File | null) {
     setState(prev => ({ ...prev, status: "loading", fileName: file?.name ?? null }));
-    const loaded = await mockQuestionApi.loadFromFile(file);
+    const { questions, log } = await parseQuestions((await file?.text()) ?? "");
     setState(prev => ({
       ...prev,
       status: "ready",
-      questions: loaded,
+      questions,
       activeQuestions: [],
       results: [],
       selectedOptions: {},
       currentIndex: 0,
+      logs: log,
     }));
-    return loaded;
+    return { questions, log };
   },
   async loadFromText(text: string) {
     setState(prev => ({ ...prev, status: "loading", pastedText: text }));
-    const loaded = await mockQuestionApi.loadFromText(text);
+    const { questions, log } = await parseQuestions(text);
     setState(prev => ({
       ...prev,
       status: "ready",
-      questions: loaded,
+      questions,
       activeQuestions: [],
       results: [],
       selectedOptions: {},
       currentIndex: 0,
+      logs: log,
     }));
-    return loaded;
+    return { questions, log };
   },
   async loadSample() {
     setState(prev => ({ ...prev, status: "loading" }));
-    const loaded = await mockQuestionApi.loadSample();
+    const { questions, log } = await loadSample();
     setState(prev => ({
       ...prev,
       status: "ready",
-      questions: loaded,
+      questions,
       activeQuestions: [],
       results: [],
       selectedOptions: {},
       currentIndex: 0,
+      logs: log,
     }));
-    return loaded;
+    return { questions, log };
   },
   async startTest() {
     setState(prev => ({ ...prev, status: "loading" }));

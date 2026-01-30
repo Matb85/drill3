@@ -30,7 +30,12 @@ export class QuestionBuilder {
   private pushAnswer() {
     if (!this.question) return;
     const answerBody = this.answer.lines.join("\n");
-    this.question.addAnswer(answerBody, this.answer.correct, this.answer.identifier || undefined);
+    try {
+      this.question.addAnswer(answerBody, this.answer.correct, this.answer.identifier || undefined);
+    } catch (e) {
+      this.answer.lines = [];
+      throw e;
+    }
     this.answer.lines = [];
   }
 

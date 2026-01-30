@@ -1,7 +1,7 @@
 import type { ParsedOptions } from "./meta/options-block-processor";
 import { QuestionParser } from "./question-parser";
 import type { Question } from "./questions/question";
-import type { QuizOption, QuizQuestion } from "@/lib/mock-api";
+import type { QuizOption, QuizQuestion } from "@/lib/types";
 
 export type ParsedBank = {
   questions: QuizQuestion[];

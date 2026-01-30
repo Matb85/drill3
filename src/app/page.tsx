@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, FileText, Loader2, Shuffle, UploadCloud, Wand2 } from "lucide-react";
+import { AlertTriangle, ArrowRight, FileText, Loader2, Shuffle, UploadCloud, Wand2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,11 +17,12 @@ export default function Home() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { config, status, questions, pastedText } = quizStore.useStore(state => ({
+  const { config, status, questions, pastedText, logs } = quizStore.useStore(state => ({
     config: state.config,
     status: state.status,
     questions: state.questions,
     pastedText: state.pastedText,
+    logs: state.logs,
   }));
 
   const loading = status === "loading";
@@ -84,6 +85,18 @@ export default function Home() {
                   Clear
                 </Button>
               </div>
+              {Boolean(logs.length) && (
+                <div className="mt-3 space-y-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-amber-900 shadow-sm dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-100">
+                  <p className="flex items-center gap-2 font-medium">
+                    <AlertTriangle className="size-4" /> Parsing logs:
+                  </p>
+                  <ul className="space-y-1 list-disc pl-5">
+                    {logs.map((entry, index) => (
+                      <li key={`${index}-${entry.slice(0, 20)}`}>{entry}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <Textarea
                 rows={4}
                 value={pastedText}

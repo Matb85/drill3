@@ -12,7 +12,7 @@ const excerpt = (question: Question, limit = 40) => {
 };
 
 export class QuestionParsingUtils {
-  parseQuestion(str: string): Question {
+  parseQuestion(str: string, logFn: LogFn): Question {
     const lines = splitWithNewlines(str);
     const builder = new QuestionBuilder();
 
@@ -26,23 +26,27 @@ export class QuestionParsingUtils {
 
     let parsingAnswers = false;
 
-    for (const line of workingLines) {
-      if (!parsingAnswers) {
-        const answerMatch = matchAnswer(line);
-        if (!answerMatch) {
-          builder.appendToBody(line);
+    try {
+      for (const line of workingLines) {
+        if (!parsingAnswers) {
+          const answerMatch = matchAnswer(line);
+          if (!answerMatch) {
+            builder.appendToBody(line);
+          } else {
+            parsingAnswers = true;
+            builder.addAnswer(answerMatch.content, answerMatch.correct, answerMatch.letter);
+          }
         } else {
-          parsingAnswers = true;
-          builder.addAnswer(answerMatch.content, answerMatch.correct, answerMatch.letter);
-        }
-      } else {
-        const answerMatch = matchAnswer(line);
-        if (answerMatch) {
-          builder.addAnswer(answerMatch.content, answerMatch.correct, answerMatch.letter);
-        } else {
-          builder.appendAnswerLine(line);
+          const answerMatch = matchAnswer(line);
+          if (answerMatch) {
+            builder.addAnswer(answerMatch.content, answerMatch.correct, answerMatch.letter);
+          } else {
+            builder.appendAnswerLine(line);
+          }
         }
       }
+    } catch (e) {
+      logFn(`Error parsing question: ${(e as Error).message}`);
     }
 
     return builder.build();
