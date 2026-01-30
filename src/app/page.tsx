@@ -32,169 +32,163 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <UploadCloud className="size-5 text-indigo-500" /> Load questions
-            </CardTitle>
-            <CardDescription>Upload a .txt file, paste text, or use the sample.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-5">
-            <div className="flex flex-col gap-4">
-              <div className="rounded-lg border border-slate-200 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
-                <p className="font-medium">Upload a file</p>
-                <div className="mt-3 flex flex-wrap items-center gap-3">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="gap-2"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={loading}
-                  >
-                    {loading ? <Loader2 className="size-4 animate-spin" /> : <FileText className="size-4" />}
-                    Select file
-                  </Button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".txt"
-                    className="hidden"
-                    onChange={event => {
-                      const file = event.target.files?.[0] ?? null;
-                      void quizStore.loadFromFile(file);
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-slate-200 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
-                <p className="font-medium">Paste questions</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    disabled={loading}
-                    onClick={() => void quizStore.loadFromText(pastedText)}
-                  >
-                    {loading ? <Loader2 className="size-4 animate-spin" /> : <UploadCloud className="size-4" />}
-                    Load pasted text
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => quizStore.setPastedText("")}>
-                    Clear
-                  </Button>
-                </div>
-                <Textarea
-                  rows={4}
-                  value={pastedText}
-                  onChange={event => quizStore.setPastedText(event.target.value)}
-                  placeholder="Paste your question bank..."
-                  className="mt-3"
+    <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <UploadCloud className="size-5 text-indigo-500" /> Load questions
+          </CardTitle>
+          <CardDescription>Upload a .txt file, paste text, or use the sample.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4">
+            <div className="rounded-lg border border-slate-200 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <p className="font-medium">Upload a file</p>
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading}
+                >
+                  {loading ? <Loader2 className="size-4 animate-spin" /> : <FileText className="size-4" />}
+                  Select file
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".txt"
+                  className="hidden"
+                  onChange={event => {
+                    const file = event.target.files?.[0] ?? null;
+                    void quizStore.loadFromFile(file);
+                  }}
                 />
               </div>
             </div>
 
-            <Separator />
-
-            <div className="flex flex-wrap items-center gap-3">
-              <Button
-                variant="outline"
-                className="gap-2"
-                disabled={loading}
-                onClick={() => void quizStore.loadSample()}
-              >
-                <Wand2 className="size-4" /> Load sample
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Shuffle className="size-5 text-indigo-500" /> Test configuration
-            </CardTitle>
-            <CardDescription>
-              {questions.length ? `${questions.length} questions loaded` : "Load questions to begin."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex flex-wrap gap-2 items-center">
-              <Button variant="outline" onClick={() => quizStore.reset()} disabled={loading}>
-                Reset
-              </Button>
-              <Button disabled={!questions.length || loading} onClick={() => void handleStart()} className="gap-2">
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
-                Go to test
-              </Button>
-            </div>
-
-            <div className="space-y-1 border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
-              <label className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
-                <Checkbox
-                  checked={config.shuffleQuestions}
-                  onCheckedChange={checked => quizStore.setConfig({ shuffleQuestions: Boolean(checked) })}
-                />
-                Shuffle questions
-              </label>
-              <p className="text-xs text-slate-600 dark:text-slate-400">Randomize question order each run.</p>
-            </div>
-
-            <div className="space-y-1 border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
-              <label className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
-                <Checkbox
-                  checked={config.shuffleAnswers}
-                  onCheckedChange={checked => quizStore.setConfig({ shuffleAnswers: Boolean(checked) })}
-                />
-                Shuffle answers
-              </label>
-              <p className="text-xs text-slate-600 dark:text-slate-400">Mix option order per question.</p>
-            </div>
-
-            <div className="space-y-1 border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="font-medium text-slate-800 dark:text-slate-100">Scoring</p>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">Choose how credit is assigned.</p>
-                </div>
+            <div className="rounded-lg border border-slate-200 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <p className="font-medium">Paste questions</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={loading}
+                  onClick={() => void quizStore.loadFromText(pastedText)}
+                >
+                  {loading ? <Loader2 className="size-4 animate-spin" /> : <UploadCloud className="size-4" />}
+                  Load pasted text
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => quizStore.setPastedText("")}>
+                  Clear
+                </Button>
               </div>
-              <RadioGroup
-                value={config.scoring}
-                onValueChange={(value: ScoringMode) => quizStore.setConfig({ scoring: value })}
-                className="mt-3 grid gap-2"
-              >
-                <Label className="flex items-center gap-2">
-                  <RadioGroupItem value="per-question" id="score-question" /> Per question (perfect = 1)
-                </Label>
-                <Label className="flex items-center gap-2">
-                  <RadioGroupItem value="per-answer" id="score-answer" /> Per answer (fractions allowed)
-                </Label>
-              </RadioGroup>
+              <Textarea
+                rows={4}
+                value={pastedText}
+                onChange={event => quizStore.setPastedText(event.target.value)}
+                placeholder="Paste your question bank..."
+                className="mt-3"
+              />
             </div>
+          </div>
 
-            <div className="space-y-1 border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="font-medium text-slate-800 dark:text-slate-100">Penalties</p>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">Pick how wrong answers count.</p>
-                </div>
+          <Separator />
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Button variant="outline" className="gap-2" disabled={loading} onClick={() => void quizStore.loadSample()}>
+              <Wand2 className="size-4" /> Load sample
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Shuffle className="size-5 text-indigo-500" /> Test configuration
+          </CardTitle>
+          <CardDescription>
+            {questions.length ? `${questions.length} questions loaded` : "Load questions to begin."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap gap-2 items-center">
+            <Button variant="outline" onClick={() => quizStore.reset()} disabled={loading}>
+              Reset
+            </Button>
+            <Button disabled={!questions.length || loading} onClick={() => void handleStart()} className="gap-2">
+              {loading ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
+              Go to test
+            </Button>
+          </div>
+
+          <div className="space-y-1 border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
+            <label className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
+              <Checkbox
+                checked={config.shuffleQuestions}
+                onCheckedChange={checked => quizStore.setConfig({ shuffleQuestions: Boolean(checked) })}
+              />
+              Shuffle questions
+            </label>
+            <p className="text-xs text-slate-600 dark:text-slate-400">Randomize question order each run.</p>
+          </div>
+
+          <div className="space-y-1 border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
+            <label className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
+              <Checkbox
+                checked={config.shuffleAnswers}
+                onCheckedChange={checked => quizStore.setConfig({ shuffleAnswers: Boolean(checked) })}
+              />
+              Shuffle answers
+            </label>
+            <p className="text-xs text-slate-600 dark:text-slate-400">Mix option order per question.</p>
+          </div>
+
+          <div className="space-y-1 border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-medium text-slate-800 dark:text-slate-100">Scoring</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Choose how credit is assigned.</p>
               </div>
-              <RadioGroup
-                value={config.penalty}
-                onValueChange={(value: PenaltyMode) => quizStore.setConfig({ penalty: value })}
-                className="mt-3 grid gap-2"
-              >
-                <Label className="flex items-center gap-2">
-                  <RadioGroupItem value="counterbalance" id="penalty-counter" /> Wrong subtracts from correct
-                </Label>
-                <Label className="flex items-center gap-2">
-                  <RadioGroupItem value="zeroes" id="penalty-zero" /> Any wrong zeros the question
-                </Label>
-              </RadioGroup>
             </div>
+            <RadioGroup
+              value={config.scoring}
+              onValueChange={(value: ScoringMode) => quizStore.setConfig({ scoring: value })}
+              className="mt-3 grid gap-2"
+            >
+              <Label className="flex items-center gap-2">
+                <RadioGroupItem value="per-question" id="score-question" /> Per question (perfect = 1)
+              </Label>
+              <Label className="flex items-center gap-2">
+                <RadioGroupItem value="per-answer" id="score-answer" /> Per answer (fractions allowed)
+              </Label>
+            </RadioGroup>
+          </div>
 
-            {/* 
+          <div className="space-y-1 border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-medium text-slate-800 dark:text-slate-100">Penalties</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Pick how wrong answers count.</p>
+              </div>
+            </div>
+            <RadioGroup
+              value={config.penalty}
+              onValueChange={(value: PenaltyMode) => quizStore.setConfig({ penalty: value })}
+              className="mt-3 grid gap-2"
+            >
+              <Label className="flex items-center gap-2">
+                <RadioGroupItem value="counterbalance" id="penalty-counter" /> Wrong subtracts from correct
+              </Label>
+              <Label className="flex items-center gap-2">
+                <RadioGroupItem value="zeroes" id="penalty-zero" /> Any wrong zeros the question
+              </Label>
+            </RadioGroup>
+          </div>
+
+          {/* 
             <div className="flex items-center justify-between border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
               <div className="space-y-1 pr-4">
                 <p className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
@@ -214,9 +208,8 @@ export default function Home() {
               />
             </div>
  */}
-          </CardContent>
-        </Card>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

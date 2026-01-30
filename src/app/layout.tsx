@@ -63,7 +63,7 @@ export default function RootLayout({
               <ThemeToggle />
             </div>
           </header>
-          <main className="flex-1">{children}</main>
+          {children}
         </div>
       </body>
     </html>

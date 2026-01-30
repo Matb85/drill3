@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 export default function Test() {
   const router = useRouter();
 
-  const { status, activeQuestions, currentIndex, selectedOptions, results, config } = quizStore.useStore(state => ({
+  const { status, activeQuestions, currentIndex, selectedOptions, results } = quizStore.useStore(state => ({
     status: state.status,
     activeQuestions: state.activeQuestions,
     currentIndex: state.currentIndex,
@@ -27,7 +27,6 @@ export default function Test() {
   const question = activeQuestions[currentIndex];
   const resultMap = Object.fromEntries(results.map(item => [item.questionId, item]));
   const loading = status === "loading";
-  const progress = activeQuestions.length ? Math.round(((currentIndex + 1) / activeQuestions.length) * 100) : 0;
   const answeredCount = results.length;
   const totalQuestions = activeQuestions.length || 1;
   const completionPercent = Math.round((answeredCount / totalQuestions) * 100);
@@ -69,100 +68,91 @@ export default function Test() {
 
   const currentResult = resultMap[question.id];
 
-  const ScorePanel = ({ className }: { className?: string }) => (
-    <Card className={cn("border-slate-200 shadow-sm dark:border-slate-800", className)}>
-      <CardHeader>
-        <div className="font-semibold text-slate-800 dark:text-slate-100">
-          Score: {summary.scorePercent}% ({summary.correct}/{currentIndex})
-        </div>
-        <div className="mt-3 h-2 rounded-full bg-slate-200 dark:bg-slate-800">
-          <div className="h-full rounded-full bg-indigo-500" style={{ width: `${completionPercent}%` }} />
-        </div>
-      </CardHeader>
-      <CardContent className="grid grid-cols-3 gap-2 text-center font-medium text-slate-700 dark:text-slate-200">
-        <div className="box border-emerald-100 dark:border-emerald-500/30">
-          <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-300">{summary.correct}</div>
-          <div>Correct</div>
-        </div>
-        <div className="box border-amber-100 dark:border-amber-500/30">
-          <div className="text-lg font-semibold text-amber-600 dark:text-amber-300">{summary.partial}</div>
-          <div>Partial</div>
-        </div>
-        <div className="box border-rose-100 dark:border-rose-500/30">
-          <div className="text-lg font-semibold text-rose-600 dark:text-rose-300">{summary.incorrect}</div>
-          <div>Wrong</div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
   return (
-    <div className="flex flex-col gap-4">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="flex flex-col gap-4">
-          <Card>
-            <CardHeader className="space-y-2">
-              <CardTitle className=" text-slate-500 dark:text-slate-400">
-                Question {currentIndex + 1} of {activeQuestions.length}
-              </CardTitle>
-              <CardTitle className="text-xl">{question.prompt}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              {question.options.map(option => {
-                const selected = selectedOptions[question.id]?.includes(option.id);
-                const reveal = Boolean(currentResult);
-                const isCorrectChoice = option.correct;
-                const stateClass = reveal
-                  ? isCorrectChoice
-                    ? "border-emerald-500/60 bg-emerald-50 dark:bg-emerald-500/10"
-                    : selected
-                      ? "border-rose-500/60 bg-rose-50 dark:bg-rose-500/10"
-                      : "border-slate-200 dark:border-slate-800"
-                  : "hover:border-indigo-400";
+    <main className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] items-start">
+      <Card>
+        <CardHeader className="space-y-2">
+          <CardTitle className=" text-slate-500 dark:text-slate-400">
+            Question {currentIndex + 1} of {activeQuestions.length}
+          </CardTitle>
+          <CardTitle className="text-xl">{question.prompt}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          {question.options.map(option => {
+            const selected = selectedOptions[question.id]?.includes(option.id);
+            const reveal = Boolean(currentResult);
+            const isCorrectChoice = option.correct;
+            const stateClass = reveal
+              ? isCorrectChoice
+                ? "border-emerald-500/60 bg-emerald-50 dark:bg-emerald-500/10"
+                : selected
+                  ? "border-rose-500/60 bg-rose-50 dark:bg-rose-500/10"
+                  : "border-slate-200 dark:border-slate-800"
+              : "hover:border-indigo-400";
 
-                return (
-                  <div
-                    key={option.id}
-                    onClick={() => toggle(option.id)}
-                    className={cn(
-                      "cursor-pointer flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
-                      "bg-white dark:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
-                      stateClass,
-                    )}
-                  >
-                    <Checkbox checked={selected} className="mt-1" />
-                    <div className="flex flex-1 flex-col gap-1">
-                      <span className="font-medium text-slate-800 dark:text-slate-100">{option.text}</span>
-                      {reveal && option.explanation && (
-                        <span className="text-slate-600 dark:text-slate-300">{option.explanation}</span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-
-              {revealStatus(currentResult)}
-              <div className="flex items-center justify-end gap-2">
-                {!currentResult && (
-                  <Button variant="secondary" onClick={check} disabled={loading} className="gap-2">
-                    {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Check
-                  </Button>
+            return (
+              <div
+                key={option.id}
+                onClick={() => {
+                  if (!currentResult) toggle(option.id);
+                }}
+                className={cn(
+                  "cursor-pointer flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
+                  "bg-white dark:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+                  stateClass,
                 )}
-                {currentResult && (
-                  <Button onClick={next} className="gap-2">
-                    Next <ArrowRight className="size-4" />
-                  </Button>
-                )}
+              >
+                <Checkbox checked={selected} className="mt-1" />
+                <div className="flex flex-1 flex-col gap-1">
+                  <span className="font-medium text-slate-800 dark:text-slate-100 select-none">{option.text}</span>
+                  {reveal && option.explanation && (
+                    <span className="text-slate-600 dark:text-slate-300">{option.explanation}</span>
+                  )}
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            );
+          })}
 
-        <aside className="hidden lg:block">
-          <ScorePanel />
-        </aside>
-      </div>
-    </div>
+          {revealStatus(currentResult)}
+          <div className="flex items-center justify-end gap-2">
+            {!currentResult && (
+              <Button variant="secondary" onClick={check} disabled={loading} className="gap-2">
+                {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Check
+              </Button>
+            )}
+            {currentResult && (
+              <Button onClick={next} className="gap-2">
+                Next <ArrowRight className="size-4" />
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="border-slate-200 shadow-sm dark:border-slate-800">
+        <CardHeader>
+          <div className="font-semibold text-slate-800 dark:text-slate-100">
+            Score: {summary.scorePercent}% ({summary.correct}/{currentIndex})
+          </div>
+          <div className="mt-3 h-2 rounded-full bg-slate-200 dark:bg-slate-800">
+            <div className="h-full rounded-full bg-indigo-500" style={{ width: `${completionPercent}%` }} />
+          </div>
+        </CardHeader>
+        <CardContent className="grid grid-cols-3 gap-2 text-center font-medium text-slate-700 dark:text-slate-200">
+          <div className="box border-emerald-100 dark:border-emerald-500/30">
+            <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-300">{summary.correct}</div>
+            <div>Correct</div>
+          </div>
+          <div className="box border-amber-100 dark:border-amber-500/30">
+            <div className="text-lg font-semibold text-amber-600 dark:text-amber-300">{summary.partial}</div>
+            <div>Partial</div>
+          </div>
+          <div className="box border-rose-100 dark:border-rose-500/30">
+            <div className="text-lg font-semibold text-rose-600 dark:text-rose-300">{summary.incorrect}</div>
+            <div>Wrong</div>
+          </div>
+        </CardContent>
+      </Card>
+    </main>
   );
 }
 
