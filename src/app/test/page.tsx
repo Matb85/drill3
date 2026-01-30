@@ -129,15 +129,10 @@ export default function Test() {
         </CardContent>
       </Card>
       <Card className="border-slate-200 shadow-sm dark:border-slate-800">
-        <CardHeader>
-          <div className="font-semibold text-slate-800 dark:text-slate-100">
-            Score: {summary.scorePercent}% ({summary.correct}/{currentIndex})
-          </div>
-          <div className="mt-3 h-2 rounded-full bg-slate-200 dark:bg-slate-800">
-            <div className="h-full rounded-full bg-indigo-500" style={{ width: `${completionPercent}%` }} />
-          </div>
+        <CardHeader className="font-semibold text-slate-800 dark:text-slate-100">
+          Score: {Math.round((summary.correct / (answeredCount || 1)) * 100)}% ({summary.correct}/{answeredCount || 1})
         </CardHeader>
-        <CardContent className="grid grid-cols-3 gap-2 text-center font-medium text-slate-700 dark:text-slate-200">
+        <CardContent className="-mt-4 grid grid-cols-3 gap-2 text-center font-medium text-slate-700 dark:text-slate-200">
           <div className="box border-emerald-100 dark:border-emerald-500/30">
             <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-300">{summary.correct}</div>
             <div>Correct</div>
@@ -151,6 +146,11 @@ export default function Test() {
             <div>Wrong</div>
           </div>
         </CardContent>
+        <CardFooter>
+          <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800">
+            <div className="h-full rounded-full bg-indigo-500" style={{ width: `${completionPercent}%` }} />
+          </div>
+        </CardFooter>
       </Card>
     </main>
   );
