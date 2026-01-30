@@ -18,7 +18,7 @@ export class Question {
   addAnswer(body: string, correct: boolean, identifier?: string) {
     const answerId = identifier || `A${this.answers.length + 1}`;
     if (this.answers.find(ans => ans.id === answerId)) {
-      throw new Error(`Answer with id ${answerId} already exists for question ${this.id}: ${this.body}`);
+      throw new Error(`Duplicate answer with ID ${answerId}) in question: "${this.body}". Answer IDs must be unique.`);
     }
     this.answers.push({ id: answerId, body: body.trim(), correct });
   }
