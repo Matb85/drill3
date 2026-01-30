@@ -11,6 +11,7 @@ type TestConfig = {
   scoring: ScoringMode;
   penalty: PenaltyMode;
   timePerQuestion: number;
+  repeatIncorrect: boolean;
 };
 
 type QuestionResult = {
@@ -19,6 +20,7 @@ type QuestionResult = {
   isCorrect: boolean;
   partial: boolean;
   score: number;
+  lastAttempted?: boolean;
 };
 
 type QuizStoreState = {
@@ -32,6 +34,7 @@ type QuizStoreState = {
   fileName: string | null;
   pastedText: string;
   logs: string[];
+  incorrectQuestionsLeft?: boolean;
 };
 
 type Listener = () => void;
@@ -42,6 +45,7 @@ const defaultConfig: TestConfig = {
   scoring: "per-answer",
   penalty: "counterbalance",
   timePerQuestion: 60,
+  repeatIncorrect: false,
 };
 
 const STORAGE_KEY = "quiz-store-26-01-30";
@@ -270,14 +274,49 @@ export const quizStore = {
     return result;
   },
   nextQuestion() {
+    let reachedEnd = false;
     setState(prev => {
-      const isLast = prev.currentIndex + 1 >= prev.activeQuestions.length;
-      return {
-        ...prev,
-        currentIndex: Math.min(prev.currentIndex + 1, Math.max(prev.activeQuestions.length - 1, 0)),
-        status: isLast ? "done" : prev.status,
-      };
+      const { activeQuestions, selectedOptions, currentIndex, results, config } = prev;
+
+      let incorrectQuestionsLeft = prev.incorrectQuestionsLeft || false;
+
+      let nextIndex = currentIndex + 1;
+
+      const isLast = nextIndex >= activeQuestions.length;
+
+      const lastRes = results.at(-1);
+
+      if (!config.repeatIncorrect || !lastRes || !incorrectQuestionsLeft) {
+        if (isLast) reachedEnd = true;
+        return { ...prev, currentIndex: nextIndex % activeQuestions.length, status: isLast ? "done" : prev.status };
+      }
+
+      if (lastRes.isCorrect === false) {
+        incorrectQuestionsLeft = true;
+        lastRes.lastAttempted = true;
+        selectedOptions[lastRes.questionId] = [];
+      } else {
+        lastRes.lastAttempted = false;
+      }
+
+      if (results.length === activeQuestions.length && results.map(r => r.isCorrect).every(v => v === true)) {
+        incorrectQuestionsLeft = false;
+        reachedEnd = true;
+        return { ...prev, results, currentIndex: nextIndex % activeQuestions.length, status: "done" };
+      }
+
+      while (true) {
+        const nextQuestion = activeQuestions[nextIndex % activeQuestions.length];
+        const nextResult = results.find(item => item.questionId === nextQuestion.id);
+        if (!nextResult || nextResult.isCorrect === false) {
+          break;
+        }
+        nextIndex = (nextIndex + 1) % activeQuestions.length;
+      }
+
+      return { ...prev, results, currentIndex: nextIndex % activeQuestions.length, incorrectQuestionsLeft };
     });
+    return reachedEnd;
   },
 };
 

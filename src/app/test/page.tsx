@@ -60,13 +60,12 @@ export default function Test() {
   }
 
   function next() {
-    quizStore.nextQuestion();
-    if (currentIndex + 1 >= activeQuestions.length) {
-      router.push("/summary");
-    }
+    const done = quizStore.nextQuestion();
+    if (done) router.push("/summary");
   }
 
   const currentResult = resultMap[question.id];
+  const reveal = Boolean(currentResult) && currentResult?.lastAttempted !== true;
 
   return (
     <main className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] items-start">
@@ -80,7 +79,6 @@ export default function Test() {
         <CardContent className="flex flex-col gap-3">
           {question.answers.map(option => {
             const selected = selectedOptions[question.id]?.includes(option.id);
-            const reveal = Boolean(currentResult);
             const isCorrectChoice = option.correct;
             const stateClass = reveal
               ? isCorrectChoice
@@ -94,7 +92,7 @@ export default function Test() {
               <div
                 key={option.id}
                 onClick={() => {
-                  if (!currentResult) toggle(option.id);
+                  if (!reveal) toggle(option.id);
                 }}
                 className={cn(
                   "cursor-pointer flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
@@ -108,14 +106,14 @@ export default function Test() {
             );
           })}
 
-          {revealStatus(currentResult)}
+          {revealStatus(reveal, currentResult)}
           <div className="flex items-center justify-end gap-2">
-            {!currentResult && (
+            {!reveal && (
               <Button variant="secondary" onClick={check} disabled={loading} className="gap-2">
                 {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Check
               </Button>
             )}
-            {currentResult && (
+            {reveal && (
               <Button onClick={next} className="gap-2">
                 Next <ArrowRight className="size-4" />
               </Button>
@@ -151,8 +149,8 @@ export default function Test() {
   );
 }
 
-function revealStatus(result?: { isCorrect: boolean; partial: boolean }) {
-  if (!result)
+function revealStatus(reveal: boolean, result?: { isCorrect: boolean; partial: boolean }) {
+  if (!reveal || !result)
     return (
       <div className="invisible flex items-center gap-2 rounded-lgbg-slate-100 px-3 py-2 text-slate-800 dark:bg-slate-800 dark:text-slate-100">
         <span>Not checked yet</span>

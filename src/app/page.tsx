@@ -160,6 +160,19 @@ export default function Home() {
           </div>
 
           <div className="space-y-1 border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
+            <label className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
+              <Checkbox
+                checked={config.repeatIncorrect}
+                onCheckedChange={checked => quizStore.setConfig({ repeatIncorrect: Boolean(checked) })}
+              />
+              Repeat incorrectly answered questions
+            </label>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              After the last question, cycle back to retry any you missed until all are correct.
+            </p>
+          </div>
+
+          <div className="space-y-1 border-slate-200 bg-white py-2 dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="font-medium text-slate-800 dark:text-slate-100">Scoring</p>
