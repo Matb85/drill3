@@ -75,10 +75,10 @@ export default function Test() {
           <CardTitle className=" text-slate-500 dark:text-slate-400">
             Question {currentIndex + 1} of {activeQuestions.length}
           </CardTitle>
-          <CardTitle className="text-xl">{question.prompt}</CardTitle>
+          <CardTitle className="text-xl">{question.body}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
-          {question.options.map(option => {
+          {question.answers.map(option => {
             const selected = selectedOptions[question.id]?.includes(option.id);
             const reveal = Boolean(currentResult);
             const isCorrectChoice = option.correct;
@@ -103,12 +103,7 @@ export default function Test() {
                 )}
               >
                 <Checkbox checked={selected} className="mt-1" />
-                <div className="flex flex-1 flex-col gap-1">
-                  <span className="font-medium text-slate-800 dark:text-slate-100 select-none">{option.text}</span>
-                  {reveal && option.explanation && (
-                    <span className="text-slate-600 dark:text-slate-300">{option.explanation}</span>
-                  )}
-                </div>
+                <span className="font-medium text-slate-800 dark:text-slate-100 select-none">{option.body}</span>
               </div>
             );
           })}

@@ -29,7 +29,7 @@ describe("Pipeline", () => {
 
   test("maps items when value is an array", () => {
     const pipeline = new Pipeline(["a", "b", "c"]);
-    const mapped = pipeline.map(value => value.toUpperCase()).get();
+    const mapped = pipeline.map((value: string) => value.toUpperCase()).get();
     assert.deepEqual(mapped, ["A", "B", "C"]);
   });
 
@@ -40,7 +40,7 @@ describe("Pipeline", () => {
 
   test("filters items when value is an array", () => {
     const pipeline = new Pipeline([1, 2, 3, 4]);
-    const filtered = pipeline.filter(value => value % 2 === 0).get();
+    const filtered = pipeline.filter((value: number) => value % 2 === 0).get();
     assert.deepEqual(filtered, [2, 4]);
   });
 
@@ -53,7 +53,7 @@ describe("Pipeline", () => {
     const pipeline = new Pipeline([true, false, true]);
     const result = pipeline
       .map(value => ({ value }))
-      .filter(item => item.value)
+      .filter((item: { value: boolean }) => item.value)
       .get();
     assert.deepEqual(result, [{ value: true }, { value: true }]);
   });
@@ -75,11 +75,11 @@ describe("Pipeline", () => {
   test("collects log entries from map", () => {
     const pipeline = new Pipeline(["value"]);
     const next = pipeline
-      .map((value, log) => {
+      .map((value: string, log) => {
         log(`seen:${value}`);
         return value.toUpperCase();
       })
-      .map((value, log) => {
+      .map((value: string, log) => {
         log(`again:${value}`);
         return value;
       });
@@ -89,11 +89,11 @@ describe("Pipeline", () => {
   test("collects log entries from filter", () => {
     const pipeline = new Pipeline([1, 2, 3, 4]);
     const next = pipeline
-      .filter((value, log) => {
+      .filter((value: number, log) => {
         if (value % 2 !== 0) log(`odd:${value}`);
         return true;
       })
-      .filter((value, log) => {
+      .filter((value: number, log) => {
         if (value % 2 === 0) log(`even:${value}`);
         return false;
       });
@@ -103,7 +103,7 @@ describe("Pipeline", () => {
   test("keeps logs isolated per instance", () => {
     const tee = (value: number, log: (msg: string) => void) => {
       log(String(value));
-      return value;
+      return true;
     };
     const first = new Pipeline([1, 2, 3]).filter(tee);
     const second = new Pipeline([1, 2, 3]).filter(tee);

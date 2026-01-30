@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
 import { QuestionBuilder } from "./question-builder";
+import { validateAnswer, validateAnswers } from "./test-utils";
 
 const randomIdPattern = /^Q[0-9a-z]{6}$/i;
 
@@ -53,8 +54,8 @@ describe("QuestionBuilder", () => {
     const question = builder.build();
     assert.equal(question.body, "Hello world");
     assert.equal(question.answers.length, 2);
-    assert.deepEqual(question.answers[0], { id: "a", body: "First answer", correct: true });
-    assert.deepEqual(question.answers[1], { id: "b", body: "Second answer", correct: false });
+    validateAnswer(question.answers[0], { id: "a", body: "First answer", correct: true });
+    validateAnswer(question.answers[1], { id: "b", body: "Second answer", correct: false });
   });
 
   test("allows questions with no correct answers", () => {
@@ -72,7 +73,7 @@ describe("QuestionBuilder", () => {
     builder.appendAnswerLine("Second line");
     const question = builder.build();
     assert.equal(question.answers.length, 1);
-    assert.deepEqual(question.answers[0], { id: "Z", body: "First line\nSecond line", correct: true });
+    validateAnswer(question.answers[0], { id: "Z", body: "First line\nSecond line", correct: true });
   });
 
   test("supports multiple multi-line answers", () => {
@@ -83,8 +84,8 @@ describe("QuestionBuilder", () => {
     builder.appendAnswerLine("Line 2.2");
     const question = builder.build();
     assert.equal(question.answers.length, 2);
-    assert.deepEqual(question.answers[0], { id: "Z", body: "First line\nSecond line", correct: true });
-    assert.deepEqual(question.answers[1], { id: "Y", body: "Line 2.1\nLine 2.2", correct: false });
+    validateAnswer(question.answers[0], { id: "Z", body: "First line\nSecond line", correct: true });
+    validateAnswer(question.answers[1], { id: "Y", body: "Line 2.1\nLine 2.2", correct: false });
   });
 
   test("throws when appending answer line before creating an answer", () => {
@@ -99,7 +100,7 @@ describe("QuestionBuilder", () => {
       { body: "answer 2", correct: false, id: "b" },
     ]);
     const question = builder.build();
-    assert.deepEqual(question.answers, [
+    validateAnswers(question.answers, [
       { id: "a", body: "answer 1", correct: true },
       { id: "b", body: "answer 2", correct: false },
     ]);

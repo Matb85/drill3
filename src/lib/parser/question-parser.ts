@@ -3,34 +3,32 @@ import { QuestionParsingUtils } from "./questions/question-parsing-utils";
 import { matchNonEmptyStrings, splitWithDoubleLines } from "./utils/parsing-utils";
 import { Pipeline } from "./utils/pipeline";
 import type { ParsedOptions } from "./meta/options-block-processor";
-import type { Question } from "./questions/question";
+import type { QuestionI } from "./questions/question";
 
 export type ParseResult = {
-  questions: Question[];
+  questions: QuestionI[];
   options: ParsedOptions;
   log: string[];
 };
 
-export class QuestionParser {
-  private readonly optionsUtils = new OptionsBlockUtils();
-  private readonly parsingUtils = new QuestionParsingUtils();
+const optionsUtils = new OptionsBlockUtils();
+const parsingUtils = new QuestionParsingUtils();
 
-  parse(input: string): ParseResult {
-    const options: ParsedOptions = {};
+export function parseQuestionsFromText(input: string): ParseResult {
+  const options: ParsedOptions = {};
 
-    const pipeline = new Pipeline<string | string[]>(input)
-      .apply(splitWithDoubleLines)
-      .filter(matchNonEmptyStrings)
-      .apply(this.optionsUtils.loadOptions(options))
-      .map((str: string, log) => this.parsingUtils.parseQuestion(str, log))
-      .apply((items, log) => this.parsingUtils.mergeBrokenQuestions(items, log))
-      .apply((items, log) => this.parsingUtils.removeInvalidQuestions(items, log))
-      .apply(this.optionsUtils.assignQuestionExtras(options));
+  const pipeline = new Pipeline<string | string[]>(input)
+    .apply(splitWithDoubleLines)
+    .filter(matchNonEmptyStrings)
+    .apply(optionsUtils.loadOptions(options))
+    .map((str: string, log) => parsingUtils.parseQuestion(str, log))
+    .apply((items, log) => parsingUtils.mergeBrokenQuestions(items, log))
+    .apply((items, log) => parsingUtils.removeInvalidQuestions(items, log))
+    .apply(optionsUtils.assignQuestionExtras(options));
 
-    return {
-      questions: pipeline.get(),
-      options,
-      log: pipeline.getLog(),
-    };
-  }
+  return {
+    questions: pipeline.get().map(item => item.toStaticQuestion()),
+    options,
+    log: pipeline.getLog(),
+  };
 }

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
 import { Question } from "./question";
+import { validateAnswer } from "./test-utils";
 
 describe("Question", () => {
   test("adds answers with default identifiers", () => {
@@ -9,14 +10,14 @@ describe("Question", () => {
     question.addAnswer("First answer", true);
     question.addAnswer("Second answer", false);
     assert.equal(question.answers.length, 2);
-    assert.deepEqual(question.answers[0], { id: "A1", body: "First answer", correct: true });
-    assert.deepEqual(question.answers[1], { id: "A2", body: "Second answer", correct: false });
+    validateAnswer(question.answers[0], { id: "A1", body: "First answer", correct: true });
+    validateAnswer(question.answers[1], { id: "A2", body: "Second answer", correct: false });
   });
 
   test("trims answer bodies and respects custom identifiers", () => {
     const question = new Question("Body", "Q2");
     question.addAnswer("  trimmed  ", false, "z");
-    assert.deepEqual(question.answers[0], { id: "z", body: "trimmed", correct: false });
+    validateAnswer(question.answers[0], { id: "z", body: "trimmed", correct: false });
   });
 
   test("counts correct answers", () => {

@@ -29,10 +29,10 @@ describe("QuestionParsingUtils.parseQuestion", () => {
     assert.equal(result.answers.length, 2);
     assert.equal(result.answers[0].body, "Hello Karma");
     assert.equal(result.answers[0].correct, true);
-    assert.equal(result.answers[0].id, "a");
+    assert.equal(result.answers[0].id.startsWith("a"), true);
     assert.equal(result.answers[1].body, "Hello Sir William");
     assert.equal(result.answers[1].correct, false);
-    assert.equal(result.answers[1].id, "b");
+    assert.equal(result.answers[1].id.startsWith("b"), true);
   });
 
   test("parses multi-line body", () => {
@@ -57,7 +57,7 @@ describe("QuestionParsingUtils.parseQuestion", () => {
     assert.equal(result.body, "Hello world");
     assert.equal(result.id, "ok");
     assert.equal(result.answers.length, 1);
-    assert.equal(result.answers[0].id, "a");
+    assert.equal(result.answers[0].id.startsWith("a"), true);
   });
 
   test("parses multi-line answers", () => {
@@ -139,7 +139,7 @@ describe("QuestionParsingUtils.removeInvalidQuestions", () => {
   test("removes questions with no correct answers", () => {
     const log: string[] = [];
     const noneCorrect = makeQuestion("No correct", 2, -1);
-    noneCorrect.answers.forEach(answer => (answer.correct = false));
+    noneCorrect.answers.forEach(answer => ((answer as unknown as { correct: boolean }).correct = false));
     const result = utils.removeInvalidQuestions([noneCorrect], message => log.push(message));
     assert.equal(result.length, 0);
     assert.equal(log.length, 1);

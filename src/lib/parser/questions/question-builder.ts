@@ -23,8 +23,7 @@ export class QuestionBuilder {
   }
 
   private buildQuestion() {
-    const questionId = this.identifier || `Q${Math.random().toString(36).slice(2, 8)}`;
-    this.question = new Question(this.bodyLines.join("\n\n"), questionId);
+    this.question = new Question(this.bodyLines.join("\n\n"), this.identifier || undefined);
   }
 
   private pushAnswer() {

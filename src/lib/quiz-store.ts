@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-
-import { type QuizQuestion } from "@/lib/types";
+import { QuestionI } from "./parser/questions/question";
 
 export type Stage = "idle" | "ready" | "testing" | "done" | "loading";
 export type ScoringMode = "per-question" | "per-answer";
@@ -25,8 +24,8 @@ type QuestionResult = {
 type QuizStoreState = {
   status: Stage;
   config: TestConfig;
-  questions: QuizQuestion[];
-  activeQuestions: QuizQuestion[];
+  questions: QuestionI[];
+  activeQuestions: QuestionI[];
   selectedOptions: Record<string, string[]>;
   results: QuestionResult[];
   currentIndex: number;
@@ -65,7 +64,7 @@ function delay(ms = 320) {
 }
 async function parseQuestions(text: string) {
   await delay();
-  return await import("@/lib/parser").then(mod => mod.parseQuestionsFromText(text));
+  return await import("@/lib/parser/question-parser").then(mod => mod.parseQuestionsFromText(text));
 }
 async function loadSample() {
   await delay();
@@ -129,17 +128,17 @@ function shuffleArray<T>(items: T[]) {
   return copy;
 }
 
-function prepareQuestions(list: QuizQuestion[], config: TestConfig) {
+function prepareQuestions(list: QuestionI[], config: TestConfig) {
   const base = config.shuffleQuestions ? shuffleArray(list) : [...list];
   if (!config.shuffleAnswers) return base;
   return base.map(question => ({
     ...question,
-    options: shuffleArray(question.options),
+    answers: shuffleArray(question.answers),
   }));
 }
 
-function computeResult(question: QuizQuestion, selected: string[], config: TestConfig): QuestionResult {
-  const correctIds = question.options.filter(option => option.correct).map(option => option.id);
+function computeResult(question: QuestionI, selected: string[], config: TestConfig): QuestionResult {
+  const correctIds = question.answers.filter(option => option.correct).map(option => option.id);
   const good = selected.filter(id => correctIds.includes(id)).length;
   const bad = selected.filter(id => !correctIds.includes(id)).length;
   const missed = correctIds.length - good;
@@ -253,7 +252,7 @@ export const quizStore = {
     }));
     return true;
   },
-  toggleOption(question: QuizQuestion, optionId: string) {
+  toggleOption(question: QuestionI, optionId: string) {
     setState(prev => {
       const current = prev.selectedOptions[question.id] ?? [];
       const nextSelection = current.includes(optionId) ? current.filter(id => id !== optionId) : [...current, optionId];
@@ -261,7 +260,7 @@ export const quizStore = {
       return { ...prev, selectedOptions: { ...prev.selectedOptions, [question.id]: nextSelection } };
     });
   },
-  checkCurrent(question: QuizQuestion) {
+  checkCurrent(question: QuestionI) {
     const selected = state.selectedOptions[question.id] ?? [];
     const result = computeResult(question, selected, state.config);
     setState(prev => {

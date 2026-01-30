@@ -75,11 +75,11 @@ export default function Summary() {
                 className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <p className="font-medium text-slate-800 dark:text-slate-100">{q.prompt}</p>
+                  <p className="font-medium text-slate-800 dark:text-slate-100">{q.body}</p>
                   <OutcomePill result={result} />
                 </div>
                 <div className="mt-3 space-y-2">
-                  {q.options.map(option => {
+                  {q.answers.map(option => {
                     const isSelected = selected.includes(option.id);
                     const isCorrect = option.correct;
                     const tone = isCorrect
@@ -91,12 +91,8 @@ export default function Summary() {
                     return (
                       <div key={option.id} className={cn("flex items-start gap-2 rounded-md border px-3 py-2", tone)}>
                         <div className="mt-0.5 size-2 rounded-full bg-current" />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{option.text}</p>
-                          {option.explanation && (
-                            <p className="text-xs text-slate-600 dark:text-slate-300">{option.explanation}</p>
-                          )}
-                        </div>
+
+                        <p className="text-sm font-medium">{option.body}</p>
                         {isCorrect && <CheckCircle2 className="size-4 text-emerald-500" />}
                         {!isCorrect && isSelected && <Frown className="size-4 text-rose-500" />}
                       </div>

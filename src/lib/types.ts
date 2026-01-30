@@ -4,9 +4,3 @@ export type QuizOption = {
   correct: boolean;
   explanation?: string;
 };
-
-export type QuizQuestion = {
-  id: string;
-  prompt: string;
-  options: QuizOption[];
-};

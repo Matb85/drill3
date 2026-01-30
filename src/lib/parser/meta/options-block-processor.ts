@@ -3,6 +3,7 @@ import type { LogFn } from "../utils/pipeline";
 
 export type ParsedOptions = {
   fileFormat?: string;
+  format?: string;
   markdownReady?: boolean;
   markdown?: boolean;
   mathjaxReady?: boolean;

@@ -3,6 +3,8 @@ import { describe, test } from "node:test";
 
 import { QuestionMerger } from "./question-merger";
 import { QuestionBuilder } from "./question-builder";
+import { Answer } from "./question";
+import { validateAnswers } from "./test-utils";
 
 describe("QuestionMerger", () => {
   const createQuestion = (id: string, body: string) =>
@@ -21,8 +23,8 @@ describe("QuestionMerger", () => {
     assert.equal(merged.id, q1.id);
     assert.equal(merged.body, `${q1.body}\n\n${q2.body}`);
     assert.equal(merged.answers.length, 4);
-    assert.deepEqual(merged.answers.slice(0, 2), q1.answers);
-    assert.deepEqual(merged.answers.slice(2), q2.answers);
+    validateAnswers(merged.answers.slice(0, 2), q1.answers);
+    validateAnswers(merged.answers.slice(2), q2.answers);
   });
 
   test("skips empty bodies when merging", () => {
