@@ -48,7 +48,7 @@ const defaultConfig: TestConfig = {
   repeatIncorrect: false,
 };
 
-const STORAGE_KEY = "quiz-store-26-01-30";
+const STORAGE_KEY = "quiz-store-26-01-31";
 
 const initialState: QuizStoreState = {
   status: "idle",
@@ -260,14 +260,14 @@ export const quizStore = {
   },
   toggleOption(question: QuestionI, optionId: string) {
     setState(prev => {
-      const current = prev.selectedOptions[question.id] ?? [];
+      const current = prev.selectedOptions[question.hash] ?? [];
       const nextSelection = current.includes(optionId) ? current.filter(id => id !== optionId) : [...current, optionId];
 
-      return { ...prev, selectedOptions: { ...prev.selectedOptions, [question.id]: nextSelection } };
+      return { ...prev, selectedOptions: { ...prev.selectedOptions, [question.hash]: nextSelection } };
     });
   },
   checkCurrent(question: QuestionI) {
-    const selected = state.selectedOptions[question.id] ?? [];
+    const selected = state.selectedOptions[question.hash] ?? [];
     const result = computeResult(question, selected, state.config);
     setState(prev => {
       const filtered = prev.results.filter(item => item.questionHash !== question.hash);
@@ -276,7 +276,6 @@ export const quizStore = {
     return result;
   },
   nextQuestion() {
-    let reachedEnd = false;
     setState(prev => {
       const { activeQuestions, selectedOptions, currentIndex, results, config } = prev;
 
@@ -284,12 +283,11 @@ export const quizStore = {
 
       let nextIndex = currentIndex + 1;
 
-      const isLast = nextIndex >= activeQuestions.length;
-
       const lastRes = results.at(-1);
 
-      if (!config.repeatIncorrect || !lastRes || !incorrectQuestionsLeft) {
-        if (isLast) reachedEnd = true;
+      if (!config.repeatIncorrect || !lastRes) {
+        const isLast = nextIndex >= activeQuestions.length;
+
         return { ...prev, currentIndex: nextIndex % activeQuestions.length, status: isLast ? "done" : prev.status };
       }
 
@@ -303,7 +301,6 @@ export const quizStore = {
 
       if (results.length === activeQuestions.length && results.map(r => r.isCorrect).every(v => v === true)) {
         incorrectQuestionsLeft = false;
-        reachedEnd = true;
         return { ...prev, results, currentIndex: nextIndex % activeQuestions.length, status: "done" };
       }
 
@@ -318,7 +315,6 @@ export const quizStore = {
 
       return { ...prev, results, currentIndex: nextIndex % activeQuestions.length, incorrectQuestionsLeft };
     });
-    return reachedEnd;
   },
 };
 

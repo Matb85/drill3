@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CheckCircle2, Clock3, Frown, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Frown, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -60,11 +60,9 @@ export default function Test() {
   }
 
   function next() {
-    const done = quizStore.nextQuestion();
-    if (done) router.push("/summary");
+    quizStore.nextQuestion();
   }
 
-  console.log(question.hash);
   const currentResult = resultMap[question.hash];
   const reveal = Boolean(currentResult) && currentResult?.lastAttempted !== true;
 
@@ -79,7 +77,7 @@ export default function Test() {
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           {question.answers.map(option => {
-            const selected = selectedOptions[question.id]?.includes(option.id);
+            const selected = selectedOptions[question.hash]?.includes(option.id);
             const isCorrectChoice = option.correct;
             const stateClass = reveal
               ? isCorrectChoice
