@@ -6,6 +6,7 @@ export interface Answer {
 
 export type QuestionI = {
   readonly id: string;
+  readonly hash: string;
   readonly body: string;
   readonly explanation?: string;
   readonly answers: Answer[];
@@ -19,13 +20,15 @@ function getRandomId() {
 
 export class Question {
   readonly id: string;
+  readonly hash: string;
   readonly body: string;
   readonly answers: Answer[] = [];
   explanation?: string;
   relatedLinks?: string[];
 
-  constructor(body: string, id = `Q${getRandomId()}`) {
-    this.id = id;
+  constructor(body: string, id?: string) {
+    this.hash = "Q" + getRandomId();
+    this.id = id || this.hash;
     this.body = body;
   }
 
@@ -52,6 +55,7 @@ export class Question {
   toStaticQuestion(): QuestionI {
     return {
       id: this.id,
+      hash: this.hash,
       body: this.body,
       explanation: this.explanation,
       answers: this.answers,

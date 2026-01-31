@@ -67,7 +67,7 @@ export default function Summary() {
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-sm">
           {activeQuestions.map(q => {
-            const result = results.find(item => item.questionId === q.id);
+            const result = results.find(item => item.questionHash === q.hash);
             const selected = result?.selected ?? [];
             return (
               <div

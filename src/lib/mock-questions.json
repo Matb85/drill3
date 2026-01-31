@@ -1,6 +1,7 @@
 [
   {
     "id": "q1",
+    "hash": "q1",
     "body": "International finance primarily examines...",
     "answers": [
       { "id": "q1a", "body": "Domestic fiscal policy", "correct": false },
@@ -11,6 +12,7 @@
   },
   {
     "id": "q2",
+    "hash": "q2",
     "body": "Why might countries impose capital controls?",
     "answers": [
       { "id": "q2a", "body": "Protect domestic financial stability", "correct": true },
@@ -21,6 +23,7 @@
   },
   {
     "id": "q3",
+    "hash": "q3",
     "body": "A widening current account deficit typically indicates...",
     "answers": [
       { "id": "q3a", "body": "Exports exceed imports", "correct": false },
@@ -31,6 +34,7 @@
   },
   {
     "id": "q4",
+    "hash": "q4",
     "body": "Select the statements that describe floating exchange rates.",
     "answers": [
       { "id": "q4a", "body": "Currency value is set by market supply and demand", "correct": true },
@@ -41,24 +45,13 @@
   },
   {
     "id": "q5",
+    "hash": "q5",
     "body": "Which tools are commonly used to defend a currency peg?",
-
     "answers": [
       { "id": "q5a", "body": "Selling foreign reserves", "correct": true },
       { "id": "q5b", "body": "Changing domestic interest rates", "correct": true },
       { "id": "q5c", "body": "Imposing capital flow measures", "correct": true },
       { "id": "q5d", "body": "Publishing more GDP reports", "correct": false }
-    ]
-  },
-  {
-    "id": "q6",
-    "body": "Covered interest parity is expected to hold when...",
-
-    "answers": [
-      { "id": "q6a", "body": "Capital controls fully block arbitrage", "correct": false },
-      { "id": "q6b", "body": "Forward and spot rates offset rate differentials", "correct": true },
-      { "id": "q6c", "body": "Investors are extremely risk averse", "correct": false },
-      { "id": "q6d", "body": "Inflation expectations are zero", "correct": false }
     ]
   }
 ]

@@ -15,7 +15,7 @@ type TestConfig = {
 };
 
 type QuestionResult = {
-  questionId: string;
+  questionHash: string;
   selected: string[];
   isCorrect: boolean;
   partial: boolean;
@@ -160,7 +160,7 @@ function computeResult(question: QuestionI, selected: string[], config: TestConf
     score = Math.max(0, good - (config.penalty === "counterbalance" ? bad : 0)) / Math.max(correctIds.length, 1);
   }
 
-  return { questionId: question.id, selected, isCorrect, partial, score };
+  return { questionHash: question.hash, selected, isCorrect, partial, score };
 }
 
 export const quizStore = {
@@ -200,6 +200,7 @@ export const quizStore = {
   async loadFromFile(file: File | null) {
     setState(prev => ({ ...prev, status: "loading", fileName: file?.name ?? null }));
     const { questions, log } = await parseQuestions((await file?.text()) ?? "");
+    console.log("Parsed questions from file:", questions);
     setState(prev => ({
       ...prev,
       status: "ready",
@@ -246,6 +247,7 @@ export const quizStore = {
     setState(prev => ({ ...prev, status: "loading" }));
     if (!state.questions.length) return false;
     const prepared = prepareQuestions(state.questions, state.config);
+    console.log("Prepared questions:", prepared);
     setState(prev => ({
       ...prev,
       status: "testing",
@@ -268,7 +270,7 @@ export const quizStore = {
     const selected = state.selectedOptions[question.id] ?? [];
     const result = computeResult(question, selected, state.config);
     setState(prev => {
-      const filtered = prev.results.filter(item => item.questionId !== question.id);
+      const filtered = prev.results.filter(item => item.questionHash !== question.hash);
       return { ...prev, results: [...filtered, result] };
     });
     return result;
@@ -294,7 +296,7 @@ export const quizStore = {
       if (lastRes.isCorrect === false) {
         incorrectQuestionsLeft = true;
         lastRes.lastAttempted = true;
-        selectedOptions[lastRes.questionId] = [];
+        selectedOptions[lastRes.questionHash] = [];
       } else {
         lastRes.lastAttempted = false;
       }
@@ -307,7 +309,7 @@ export const quizStore = {
 
       while (true) {
         const nextQuestion = activeQuestions[nextIndex % activeQuestions.length];
-        const nextResult = results.find(item => item.questionId === nextQuestion.id);
+        const nextResult = results.find(item => item.questionHash === nextQuestion.hash);
         if (!nextResult || nextResult.isCorrect === false) {
           break;
         }

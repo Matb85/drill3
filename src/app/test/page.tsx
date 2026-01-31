@@ -25,7 +25,7 @@ export default function Test() {
   const summary = quizStore.useStore(selectSummary);
 
   const question = activeQuestions[currentIndex];
-  const resultMap = Object.fromEntries(results.map(item => [item.questionId, item]));
+  const resultMap = Object.fromEntries(results.map(item => [item.questionHash, item]));
   const loading = status === "loading";
   const answeredCount = results.length;
   const totalQuestions = activeQuestions.length || 1;
@@ -64,7 +64,8 @@ export default function Test() {
     if (done) router.push("/summary");
   }
 
-  const currentResult = resultMap[question.id];
+  console.log(question.hash);
+  const currentResult = resultMap[question.hash];
   const reveal = Boolean(currentResult) && currentResult?.lastAttempted !== true;
 
   return (
