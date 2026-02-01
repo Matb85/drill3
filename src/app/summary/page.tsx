@@ -90,11 +90,10 @@ export default function Summary() {
 
                     return (
                       <div key={option.id} className={cn("flex items-start gap-2 rounded-md border px-3 py-2", tone)}>
-                        <div className="mt-0.5 size-2 rounded-full bg-current" />
-
+                        <div className="mt-0.5 size-2 rounded-full bg-current flex-none" />
                         <p className="text-sm font-medium">{option.body}</p>
-                        {isCorrect && <CheckCircle2 className="size-4 text-emerald-500" />}
-                        {!isCorrect && isSelected && <Frown className="size-4 text-rose-500" />}
+                        {isCorrect && <CheckCircle2 className="size-4 text-emerald-500 flex-none" />}
+                        {!isCorrect && isSelected && <Frown className="size-4 text-rose-500 flex-none" />}
                       </div>
                     );
                   })}
